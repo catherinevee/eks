@@ -217,3 +217,155 @@ variable "tags" {
   type        = map(string)
   default     = {}
 } 
+# ==============================================================================
+# Enhanced EKS Configuration Variables
+# ==============================================================================
+
+variable "enable_irsa" {
+  description = "Whether to enable IAM roles for service accounts"
+  type        = bool
+  default     = true
+}
+
+variable "enable_cluster_creator_admin_permissions" {
+  description = "Whether to enable cluster creator admin permissions"
+  type        = bool
+  default     = true
+}
+
+variable "create_cloudwatch_log_group" {
+  description = "Whether to create CloudWatch log group"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_log_retention_in_days" {
+  description = "Number of days to retain cluster logs"
+  type        = number
+  default     = 7
+}
+
+variable "cluster_endpoint_private_access_vpc_config" {
+  description = "VPC configuration for private endpoint access"
+  type = object({
+    endpoint_id = optional(string, null)
+    subnet_ids = optional(list(string), [])
+    security_group_ids = optional(list(string), [])
+  })
+  default = null
+}
+
+variable "cluster_endpoint_public_access_vpc_config" {
+  description = "VPC configuration for public endpoint access"
+  type = object({
+    endpoint_id = optional(string, null)
+    subnet_ids = optional(list(string), [])
+    security_group_ids = optional(list(string), [])
+  })
+  default = null
+}
+
+variable "cluster_security_group_additional_rules" {
+  description = "Additional security group rules for the cluster"
+  type = map(object({
+    description = string
+    protocol = string
+    from_port = number
+    to_port = number
+    type = string
+    cidr_blocks = optional(list(string), null)
+    ipv6_cidr_blocks = optional(list(string), null)
+    prefix_list_ids = optional(list(string), null)
+    security_groups = optional(list(string), null)
+    self = optional(bool, null)
+    source_security_group_id = optional(string, null)
+    source_security_group_owner_id = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "node_security_group_additional_rules" {
+  description = "Additional security group rules for the nodes"
+  type = map(object({
+    description = string
+    protocol = string
+    from_port = number
+    to_port = number
+    type = string
+    cidr_blocks = optional(list(string), null)
+    ipv6_cidr_blocks = optional(list(string), null)
+    prefix_list_ids = optional(list(string), null)
+    security_groups = optional(list(string), null)
+    self = optional(bool, null)
+    source_security_group_id = optional(string, null)
+    source_security_group_owner_id = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "cluster_outpost_config" {
+  description = "Outpost configuration for the cluster"
+  type = object({
+    control_plane_instance_type = string
+    outpost_arns = list(string)
+  })
+  default = null
+}
+
+variable "enable_network_policies" {
+  description = "Whether to enable network policies"
+  type        = bool
+  default     = false
+}
+
+variable "network_policy_provider" {
+  description = "Network policy provider (calico, cilium, or aws-vpc-cni)"
+  type        = string
+  default     = "calico"
+  validation {
+    condition     = contains(["calico", "cilium", "aws-vpc-cni"], var.network_policy_provider)
+    error_message = "Network policy provider must be one of: calico, cilium, aws-vpc-cni."
+  }
+}
+
+variable "enable_velero_backup" {
+  description = "Whether to enable Velero backup"
+  type        = bool
+  default     = false
+}
+
+variable "velero_backup_config" {
+  description = "Velero backup configuration"
+  type = object({
+    backup_location_bucket = optional(string, "")
+    backup_location_region = optional(string, "")
+    schedule = optional(string, "0 2 * * *")
+    retention_days = optional(number, 30)
+  })
+  default = {}
+}
+
+variable "enable_cloudwatch_container_insights" {
+  description = "Whether to enable CloudWatch Container Insights"
+  type        = bool
+  default     = true
+}
+
+variable "enable_aws_load_balancer_controller" {
+  description = "Whether to enable AWS Load Balancer Controller"
+  type        = bool
+  default     = true
+}
+
+variable "enable_metrics_server" {
+  description = "Whether to enable Metrics Server"
+  type        = bool
+  default     = true
+}
+
+variable "enable_cluster_autoscaler" {
+  description = "Whether to enable Cluster Autoscaler"
+  type        = bool
+  default     = false
+}
+
