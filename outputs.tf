@@ -200,7 +200,7 @@ output "cluster_public_access_cidrs" {
 
 # Kubernetes Configuration
 output "kubeconfig" {
-  description = "Kubeconfig configuration for the EKS cluster"
+  description = "Kubeconfig configuration for the EKS cluster. This output provides a complete kubeconfig file that can be used to authenticate with the cluster using AWS CLI. The configuration includes the cluster endpoint, certificate authority data, and AWS CLI authentication method. Use this output to configure kubectl or other Kubernetes tools to connect to your EKS cluster."
   value = yamlencode({
     apiVersion = "v1"
     kind       = "Config"

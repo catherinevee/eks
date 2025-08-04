@@ -40,6 +40,13 @@ resource "aws_eks_cluster" "main" {
     aws_iam_role_policy_attachment.eks_cluster_policy,
     aws_iam_role_policy_attachment.eks_vpc_resource_controller,
   ]
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      version
+    ]
+  }
 }
 
 # EKS Cluster IAM Role
@@ -297,7 +304,6 @@ resource "aws_eks_access_entry" "main" {
   type          = each.value.type
 
   kubernetes_groups = each.value.kubernetes_groups
-  username          = each.value.username
 
   tags = merge(
     var.tags,
@@ -317,4 +323,79 @@ resource "aws_eks_access_policy_association" "main" {
     type       = each.value.access_scope.type
     namespaces = each.value.access_scope.namespaces
   }
+}
+
+# CloudWatch Log Group for EKS Cluster Logs
+resource "aws_cloudwatch_log_group" "cluster" {
+  count = var.create_cloudwatch_log_group ? 1 : 0
+
+  name              = "/aws/eks/${var.cluster_name}/cluster"
+  retention_in_days = var.cluster_log_retention_in_days
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.cluster_name}-cluster-logs"
+    }
+  )
+}
+
+# Conditional Security Groups
+resource "aws_security_group" "cluster" {
+  count = length(var.cluster_security_group_ids) == 0 ? 1 : 0
+
+  name_prefix = "${var.cluster_name}-cluster-"
+  vpc_id      = data.aws_subnet.selected[0].vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.cluster_name}-cluster-sg"
+    }
+  )
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_security_group" "node" {
+  for_each = {
+    for k, v in var.node_groups : k => v
+    if length(var.cluster_security_group_ids) == 0
+  }
+
+  name_prefix = "${var.cluster_name}-${each.key}-node-"
+  vpc_id      = data.aws_subnet.selected[0].vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.cluster_name}-${each.key}-node-sg"
+    }
+  )
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Data source for VPC information
+data "aws_subnet" "selected" {
+  count = length(var.cluster_security_group_ids) == 0 ? 1 : 0
+  id    = var.subnet_ids[0]
 } 

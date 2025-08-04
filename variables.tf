@@ -138,6 +138,31 @@ variable "node_groups" {
     tags   = optional(map(string))
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for name, config in var.node_groups : (
+        config.desired_size >= config.min_size &&
+        config.desired_size <= config.max_size &&
+        config.min_size >= 0 &&
+        config.max_size >= config.min_size &&
+        length(config.subnet_ids) >= 1 &&
+        length(config.instance_types) >= 1 &&
+        (config.capacity_type == null || contains(["ON_DEMAND", "SPOT"], config.capacity_type)) &&
+        (config.max_unavailable == null || config.max_unavailable >= 1)
+      )
+    ])
+    error_message = "Node group configuration validation failed. Check desired_size, min_size, max_size relationships, subnet_ids, instance_types, capacity_type, and max_unavailable values."
+  }
+
+  validation {
+    condition = alltrue([
+      for name, config in var.node_groups : alltrue([
+        for taint in coalesce(config.taints, []) : contains(["NO_SCHEDULE", "NO_EXECUTE", "PREFER_NO_SCHEDULE"], taint.effect)
+      ])
+    ])
+    error_message = "Taint effect must be one of: NO_SCHEDULE, NO_EXECUTE, PREFER_NO_SCHEDULE."
+  }
 }
 
 # Add-ons Configuration
@@ -152,6 +177,18 @@ variable "addons" {
     tags                        = optional(map(string))
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for name, config in var.addons : (
+        config.addon_version != null &&
+        config.addon_version != "" &&
+        (config.resolve_conflicts_on_create == null || contains(["OVERWRITE", "NONE"], config.resolve_conflicts_on_create)) &&
+        (config.resolve_conflicts_on_update == null || contains(["OVERWRITE", "NONE", "PRESERVE"], config.resolve_conflicts_on_update))
+      )
+    ])
+    error_message = "Add-on configuration validation failed. Check addon_version, resolve_conflicts_on_create, and resolve_conflicts_on_update values."
+  }
 }
 
 # Fargate Profiles Configuration

@@ -340,6 +340,48 @@ access_entries = {
 }
 ```
 
+## Resource Map
+
+This module creates the following resources:
+
+### Core EKS Resources
+- **aws_eks_cluster.main** - The main EKS cluster
+- **aws_iam_role.eks_cluster** - IAM role for the EKS cluster
+- **aws_iam_role_policy_attachment.eks_cluster_policy** - Attaches AmazonEKSClusterPolicy
+- **aws_iam_role_policy_attachment.eks_vpc_resource_controller** - Attaches AmazonEKSVPCResourceController
+
+### Node Groups
+- **aws_eks_node_group.main** - EKS node groups (one per entry in var.node_groups)
+- **aws_iam_role.eks_node_group** - IAM roles for node groups (one per node group)
+- **aws_iam_role_policy_attachment.eks_worker_node_policy** - Attaches AmazonEKSWorkerNodePolicy
+- **aws_iam_role_policy_attachment.eks_cni_policy** - Attaches AmazonEKS_CNI_Policy
+- **aws_iam_role_policy_attachment.ec2_container_registry_read_only** - Attaches AmazonEC2ContainerRegistryReadOnly
+
+### Add-ons
+- **aws_eks_addon.main** - EKS add-ons (one per entry in var.addons)
+
+### Fargate Profiles
+- **aws_eks_fargate_profile.main** - Fargate profiles (one per entry in var.fargate_profiles)
+- **aws_iam_role.eks_fargate_profile** - IAM roles for Fargate profiles (one per profile)
+- **aws_iam_role_policy_attachment.eks_fargate_pod_execution_role_policy** - Attaches AmazonEKSFargatePodExecutionRolePolicy
+
+### Identity and Access Management
+- **aws_eks_identity_provider_config.main** - OIDC identity providers (one per entry in var.identity_providers)
+- **aws_eks_access_entry.main** - EKS access entries (one per entry in var.access_entries)
+- **aws_eks_access_policy_association.main** - Access policy associations (one per entry in var.access_policy_associations)
+
+### Security Groups (Conditional)
+- **aws_security_group.cluster** - Cluster security group (if var.cluster_security_group_ids is empty)
+- **aws_security_group.node** - Node security group (if var.node_groups have security group configurations)
+
+### CloudWatch Resources (Conditional)
+- **aws_cloudwatch_log_group.cluster** - CloudWatch log group for cluster logs (if var.create_cloudwatch_log_group = true)
+
+### Data Sources
+- **aws_iam_policy_document.cluster_assume_role** - IAM policy document for cluster assume role
+- **aws_iam_policy_document.node_assume_role** - IAM policy document for node assume role
+- **aws_iam_policy_document.fargate_assume_role** - IAM policy document for Fargate assume role
+
 ## Best Practices
 
 ### Security
