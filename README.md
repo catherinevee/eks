@@ -1,21 +1,21 @@
 # AWS EKS Terraform Module
 
-A comprehensive Terraform module for creating and managing Amazon Elastic Kubernetes Service (EKS) clusters with support for node groups, Fargate profiles, add-ons, and more.
+Terraform module for creating Amazon Elastic Kubernetes Service (EKS) clusters with enterprise security, monitoring, and scalability features.
 
 ## Features
 
-- **EKS Cluster**: Create EKS clusters with configurable Kubernetes versions
-- **Node Groups**: Support for multiple node groups with different instance types and configurations
-- **Fargate Profiles**: Serverless compute for Kubernetes pods
-- **Add-ons**: Install and manage EKS add-ons (AWS Load Balancer Controller, CoreDNS, etc.)
-- **Identity Providers**: Configure OIDC identity providers for authentication
-- **Access Management**: EKS access entries and policy associations
-- **Security**: Encryption at rest, security groups, and IAM roles
-- **Networking**: Configurable VPC settings, endpoint access, and IP families
+- EKS clusters with configurable Kubernetes versions
+- Multiple node groups with different instance types and configurations
+- Fargate profiles for serverless compute
+- EKS add-ons for AWS Load Balancer Controller, CoreDNS, and more
+- OIDC identity providers for authentication
+- EKS access entries and policy associations
+- Encryption at rest, security groups, and IAM roles
+- Configurable VPC settings, endpoint access, and IP families
 
 ## Usage
 
-### Basic Example
+### Basic EKS Cluster
 
 ```hcl
 module "eks" {
@@ -42,7 +42,7 @@ module "eks" {
 }
 ```
 
-### Advanced Example
+### Advanced EKS Cluster
 
 ```hcl
 module "eks" {
@@ -166,55 +166,49 @@ module "eks" {
 | terraform | >= 1.0 |
 | aws | >= 5.0 |
 
-## Providers
-
-| Name | Version |
-|------|---------|
-| aws | >= 5.0 |
-
 ## Inputs
 
 ### Required
 
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| cluster_name | Name of the EKS cluster | `string` | n/a |
-| subnet_ids | List of subnet IDs for the EKS cluster | `list(string)` | n/a |
+| cluster_name | EKS cluster name | `string` | n/a |
+| subnet_ids | Subnet IDs for EKS cluster | `list(string)` | n/a |
 
 ### Optional
 
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| cluster_version | Kubernetes version for the EKS cluster | `string` | `"1.28"` |
-| endpoint_private_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled | `bool` | `true` |
-| endpoint_public_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `true` |
-| public_access_cidrs | List of CIDR blocks which can access the Amazon EKS public API server endpoint | `list(string)` | `["0.0.0.0/0"]` |
-| cluster_security_group_ids | List of security group IDs for the EKS cluster | `list(string)` | `[]` |
-| enabled_cluster_log_types | List of the desired control plane logging to enable | `list(string)` | `["api", "audit", "authenticator", "controllerManager", "scheduler"]` |
-| cluster_encryption_config | Configuration block with encryption configuration for the cluster | `list(object({ key_arn = string }))` | `[]` |
-| cluster_encryption_resources | List of strings with resources to be encrypted | `list(string)` | `["secrets"]` |
-| service_ipv4_cidr | The CIDR block to assign Kubernetes service IP addresses from | `string` | `"10.100.0.0/16"` |
-| ip_family | The IP family used to assign Kubernetes pod and service IP addresses | `string` | `"ipv4"` |
-| node_groups | Map of EKS node groups to create | `map(object({ ... }))` | `{}` |
-| addons | Map of EKS add-ons to install | `map(object({ ... }))` | `{}` |
-| fargate_profiles | Map of EKS Fargate profiles to create | `map(object({ ... }))` | `{}` |
-| identity_providers | Map of EKS identity providers to configure | `map(object({ ... }))` | `{}` |
-| access_entries | Map of EKS access entries to create | `map(object({ ... }))` | `{}` |
-| access_policy_associations | Map of EKS access policy associations to create | `map(object({ ... }))` | `{}` |
-| tags | A map of tags to assign to the resources | `map(string)` | `{}` |
+| cluster_version | Kubernetes version | `string` | `"1.28"` |
+| endpoint_private_access | Enable private API endpoint | `bool` | `true` |
+| endpoint_public_access | Enable public API endpoint | `bool` | `true` |
+| public_access_cidrs | Public access CIDR blocks | `list(string)` | `["0.0.0.0/0"]` |
+| cluster_security_group_ids | Cluster security group IDs | `list(string)` | `[]` |
+| enabled_cluster_log_types | Control plane logging types | `list(string)` | `["api", "audit", "authenticator", "controllerManager", "scheduler"]` |
+| cluster_encryption_config | Encryption configuration | `list(object({ key_arn = string }))` | `[]` |
+| cluster_encryption_resources | Resources to encrypt | `list(string)` | `["secrets"]` |
+| service_ipv4_cidr | Service IP CIDR block | `string` | `"10.100.0.0/16"` |
+| ip_family | IP family for pods and services | `string` | `"ipv4"` |
+| node_groups | Node group configurations | `map(object({ ... }))` | `{}` |
+| addons | EKS add-on configurations | `map(object({ ... }))` | `{}` |
+| fargate_profiles | Fargate profile configurations | `map(object({ ... }))` | `{}` |
+| identity_providers | Identity provider configurations | `map(object({ ... }))` | `{}` |
+| access_entries | Access entry configurations | `map(object({ ... }))` | `{}` |
+| access_policy_associations | Access policy associations | `map(object({ ... }))` | `{}` |
+| tags | Resource tags | `map(string)` | `{}` |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | cluster_id | EKS cluster ID |
-| cluster_arn | The Amazon Resource Name (ARN) of the cluster |
-| cluster_endpoint | The endpoint for your EKS Kubernetes API |
-| cluster_oidc_issuer_url | The URL on the EKS cluster for the OpenID Connect identity provider |
-| node_groups | Map of EKS node groups created |
-| addons | Map of EKS add-ons created |
-| fargate_profiles | Map of EKS Fargate profiles created |
-| kubeconfig | Kubeconfig configuration for the EKS cluster |
+| cluster_arn | Cluster ARN |
+| cluster_endpoint | Kubernetes API endpoint |
+| cluster_oidc_issuer_url | OIDC issuer URL |
+| node_groups | Node group outputs |
+| addons | Add-on outputs |
+| fargate_profiles | Fargate profile outputs |
+| kubeconfig | Kubeconfig configuration |
 
 ## Node Group Configuration
 
@@ -224,33 +218,33 @@ Node groups support the following configuration options:
 node_groups = {
   example = {
     subnet_ids         = ["subnet-12345678", "subnet-87654321"]
-    version            = "1.28"  # Optional, defaults to cluster version
-    capacity_type      = "ON_DEMAND"  # ON_DEMAND or SPOT
+    version            = "1.28"
+    capacity_type      = "ON_DEMAND"
     instance_types     = ["t3.medium", "t3.large"]
     desired_size       = 2
     max_size           = 4
     min_size           = 1
     max_unavailable    = 1
-    launch_template    = {  # Optional
+    launch_template    = {
       id      = "lt-12345678"
       version = "$Latest"
     }
-    remote_access = {  # Optional
+    remote_access = {
       ec2_ssh_key               = "my-key"
       source_security_group_ids = ["sg-12345678"]
     }
-    taints = [  # Optional
+    taints = [
       {
         key    = "dedicated"
         value  = "example"
         effect = "NO_SCHEDULE"
       }
     ]
-    labels = {  # Optional
+    labels = {
       Environment = "production"
       NodeGroup   = "example"
     }
-    tags = {  # Optional
+    tags = {
       CostCenter = "12345"
     }
   }
@@ -340,77 +334,77 @@ access_entries = {
 }
 ```
 
-## Resource Map
+## Resource Architecture
 
 This module creates the following resources:
 
 ### Core EKS Resources
-- **aws_eks_cluster.main** - The main EKS cluster
-- **aws_iam_role.eks_cluster** - IAM role for the EKS cluster
-- **aws_iam_role_policy_attachment.eks_cluster_policy** - Attaches AmazonEKSClusterPolicy
-- **aws_iam_role_policy_attachment.eks_vpc_resource_controller** - Attaches AmazonEKSVPCResourceController
+- `aws_eks_cluster.main` - Main EKS cluster
+- `aws_iam_role.eks_cluster` - IAM role for EKS cluster
+- `aws_iam_role_policy_attachment.eks_cluster_policy` - AmazonEKSClusterPolicy
+- `aws_iam_role_policy_attachment.eks_vpc_resource_controller` - AmazonEKSVPCResourceController
 
 ### Node Groups
-- **aws_eks_node_group.main** - EKS node groups (one per entry in var.node_groups)
-- **aws_iam_role.eks_node_group** - IAM roles for node groups (one per node group)
-- **aws_iam_role_policy_attachment.eks_worker_node_policy** - Attaches AmazonEKSWorkerNodePolicy
-- **aws_iam_role_policy_attachment.eks_cni_policy** - Attaches AmazonEKS_CNI_Policy
-- **aws_iam_role_policy_attachment.ec2_container_registry_read_only** - Attaches AmazonEC2ContainerRegistryReadOnly
+- `aws_eks_node_group.main` - EKS node groups
+- `aws_iam_role.eks_node_group` - IAM roles for node groups
+- `aws_iam_role_policy_attachment.eks_worker_node_policy` - AmazonEKSWorkerNodePolicy
+- `aws_iam_role_policy_attachment.eks_cni_policy` - AmazonEKS_CNI_Policy
+- `aws_iam_role_policy_attachment.ec2_container_registry_read_only` - AmazonEC2ContainerRegistryReadOnly
 
 ### Add-ons
-- **aws_eks_addon.main** - EKS add-ons (one per entry in var.addons)
+- `aws_eks_addon.main` - EKS add-ons
 
 ### Fargate Profiles
-- **aws_eks_fargate_profile.main** - Fargate profiles (one per entry in var.fargate_profiles)
-- **aws_iam_role.eks_fargate_profile** - IAM roles for Fargate profiles (one per profile)
-- **aws_iam_role_policy_attachment.eks_fargate_pod_execution_role_policy** - Attaches AmazonEKSFargatePodExecutionRolePolicy
+- `aws_eks_fargate_profile.main` - Fargate profiles
+- `aws_iam_role.eks_fargate_profile` - IAM roles for Fargate profiles
+- `aws_iam_role_policy_attachment.eks_fargate_pod_execution_role_policy` - AmazonEKSFargatePodExecutionRolePolicy
 
 ### Identity and Access Management
-- **aws_eks_identity_provider_config.main** - OIDC identity providers (one per entry in var.identity_providers)
-- **aws_eks_access_entry.main** - EKS access entries (one per entry in var.access_entries)
-- **aws_eks_access_policy_association.main** - Access policy associations (one per entry in var.access_policy_associations)
+- `aws_eks_identity_provider_config.main` - OIDC identity providers
+- `aws_eks_access_entry.main` - EKS access entries
+- `aws_eks_access_policy_association.main` - Access policy associations
 
 ### Security Groups (Conditional)
-- **aws_security_group.cluster** - Cluster security group (if var.cluster_security_group_ids is empty)
-- **aws_security_group.node** - Node security group (if var.node_groups have security group configurations)
+- `aws_security_group.cluster` - Cluster security group
+- `aws_security_group.node` - Node security group
 
 ### CloudWatch Resources (Conditional)
-- **aws_cloudwatch_log_group.cluster** - CloudWatch log group for cluster logs (if var.create_cloudwatch_log_group = true)
+- `aws_cloudwatch_log_group.cluster` - CloudWatch log group for cluster logs
 
 ### Data Sources
-- **aws_iam_policy_document.cluster_assume_role** - IAM policy document for cluster assume role
-- **aws_iam_policy_document.node_assume_role** - IAM policy document for node assume role
-- **aws_iam_policy_document.fargate_assume_role** - IAM policy document for Fargate assume role
+- `aws_iam_policy_document.cluster_assume_role` - IAM policy document for cluster assume role
+- `aws_iam_policy_document.node_assume_role` - IAM policy document for node assume role
+- `aws_iam_policy_document.fargate_assume_role` - IAM policy document for Fargate assume role
 
 ## Best Practices
 
 ### Security
 
-1. **Enable Encryption**: Always enable encryption at rest for your EKS cluster
-2. **Use Private Subnets**: Place your EKS cluster in private subnets for better security
-3. **Restrict Public Access**: Limit public access CIDRs to your organization's IP ranges
-4. **Enable Control Plane Logging**: Enable all control plane log types for audit purposes
-5. **Use IAM Roles**: Use IAM roles instead of access keys for authentication
+1. Enable encryption at rest for your EKS cluster
+2. Place your EKS cluster in private subnets
+3. Limit public access CIDRs to your organization's IP ranges
+4. Enable all control plane log types for audit purposes
+5. Use IAM roles instead of access keys for authentication
 
 ### Networking
 
-1. **High Availability**: Use at least 2 subnets across different Availability Zones
-2. **VPC Planning**: Plan your VPC CIDR blocks carefully to avoid conflicts
-3. **Security Groups**: Use dedicated security groups for your EKS cluster
-4. **Network Policies**: Implement Kubernetes network policies for pod-to-pod communication
+1. Use at least 2 subnets across different Availability Zones
+2. Plan your VPC CIDR blocks carefully to avoid conflicts
+3. Use dedicated security groups for your EKS cluster
+4. Implement Kubernetes network policies for pod-to-pod communication
 
 ### Node Groups
 
-1. **Instance Types**: Choose appropriate instance types based on your workload requirements
-2. **Capacity Types**: Use SPOT instances for cost optimization where possible
-3. **Scaling**: Configure appropriate min/max sizes for auto-scaling
-4. **Labels and Taints**: Use labels and taints for workload placement
+1. Choose appropriate instance types based on your workload requirements
+2. Use SPOT instances for cost optimization where possible
+3. Configure appropriate min/max sizes for auto-scaling
+4. Use labels and taints for workload placement
 
 ### Monitoring and Logging
 
-1. **CloudWatch Logs**: Enable control plane logging to CloudWatch
-2. **Metrics**: Use CloudWatch Container Insights for monitoring
-3. **Alerts**: Set up CloudWatch alarms for critical metrics
+1. Enable control plane logging to CloudWatch
+2. Use CloudWatch Container Insights for monitoring
+3. Set up CloudWatch alarms for critical metrics
 
 ## Contributing
 
@@ -422,7 +416,7 @@ This module creates the following resources:
 
 ## License
 
-This module is licensed under the MIT License. See the LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Support
 
