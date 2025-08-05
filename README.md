@@ -1,6 +1,6 @@
 # AWS EKS Terraform Module
 
-Terraform module for creating Amazon Elastic Kubernetes Service (EKS) clusters with enterprise security, monitoring, and scalability features.
+Terraform module for creating Amazon Elastic Kubernetes Service (EKS) clusters with security, monitoring, and scalability features.
 
 ## Features
 
@@ -42,7 +42,7 @@ module "eks" {
 }
 ```
 
-### Advanced EKS Cluster
+### Production EKS Cluster
 
 ```hcl
 module "eks" {
